@@ -11,7 +11,7 @@ export class CreateUserUseCase {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
-  ) {}
+  ) { }
 
   async execute({ name, email, password }: ICreateUserDTO) {
     const userAlreadyExists = await this.usersRepository.findByEmail(email);
@@ -20,7 +20,7 @@ export class CreateUserUseCase {
       throw new CreateUserError();
     }
 
-    const passwordHash = await hash(password, 8);
+    const passwordHash = await hash(password, 10);
 
     const user = await this.usersRepository.create({
       email,

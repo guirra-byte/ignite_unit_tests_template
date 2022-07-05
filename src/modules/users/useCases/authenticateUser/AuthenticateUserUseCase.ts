@@ -13,40 +13,55 @@ interface IRequest {
   password: string;
 }
 
-@injectable()
+export const passwordKey: string = "f750766d2e4617e94eb4f943625ceeaa";
+
+interface IRequestRequireProps {
+
+  user: {
+
+    name: string,
+    email: string,
+    id?: string
+  },
+  token: string
+}
+
+// @injectable()
 export class AuthenticateUserUseCase {
   constructor(
-    @inject('UsersRepository')
+    // @inject('UsersRepository')
     private usersRepository: IUsersRepository,
-  ) {}
+  ) { }
 
   async execute({ email, password }: IRequest): Promise<IAuthenticateUserResponseDTO> {
     const user = await this.usersRepository.findByEmail(email);
 
-    if(!user) {
+    if (user === undefined) {
       throw new IncorrectEmailOrPasswordError();
     }
 
     const passwordMatch = await compare(password, user.password);
 
-    if (!passwordMatch) {
+    if (passwordMatch === undefined) {
       throw new IncorrectEmailOrPasswordError();
     }
 
-    const { secret, expiresIn } = authConfig.jwt;
-
-    const token = sign({ user }, secret, {
+    const token = sign({}, passwordKey, {
       subject: user.id,
-      expiresIn,
+      expiresIn: "1d",
     });
 
-    return {
+    const requireToken: IRequestRequireProps = {
+
       user: {
-        id: user.id,
+
         name: user.name,
-        email: user.email
+        email: user.email,
+        id: user.id
       },
-      token
+      token: token
     }
+
+    return requireToken;
   }
 }

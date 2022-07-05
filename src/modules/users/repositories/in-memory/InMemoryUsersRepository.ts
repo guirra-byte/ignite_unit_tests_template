@@ -4,7 +4,12 @@ import { ICreateUserDTO } from "../../useCases/createUser/ICreateUserDTO";
 import { IUsersRepository } from "../IUsersRepository";
 
 export class InMemoryUsersRepository implements IUsersRepository {
-  private users: User[] = [];
+  private users: User[];
+
+  constructor() {
+
+    this.users = [];
+  }
 
   async findByEmail(email: string): Promise<User | undefined> {
     return this.users.find(user => user.email === email);

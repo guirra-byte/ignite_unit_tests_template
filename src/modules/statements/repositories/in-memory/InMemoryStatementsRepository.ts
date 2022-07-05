@@ -5,8 +5,12 @@ import { IGetStatementOperationDTO } from "../../useCases/getStatementOperation/
 import { IStatementsRepository } from "../IStatementsRepository";
 
 export class InMemoryStatementsRepository implements IStatementsRepository {
-  private statements: Statement[] = [];
+  private statements: Statement[];
 
+  constructor() {
+
+    this.statements = [];
+  }
   async create(data: ICreateStatementDTO): Promise<Statement> {
     const statement = new Statement();
 
@@ -27,8 +31,7 @@ export class InMemoryStatementsRepository implements IStatementsRepository {
   async getUserBalance({ user_id, with_statement = false }: IGetBalanceDTO):
     Promise<
       { balance: number } | { balance: number, statement: Statement[] }
-    >
-  {
+    > {
     const statement = this.statements.filter(operation => operation.user_id === user_id);
 
     const balance = statement.reduce((acc, operation) => {
